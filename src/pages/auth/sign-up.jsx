@@ -1,17 +1,34 @@
-import {
-  Card,
-  Input,
-  Checkbox,
-  Button,
-  Typography,
-} from "@material-tailwind/react";
-import { Link } from "react-router-dom";
-
+import { Card, Input, Checkbox, Button, Typography} from "@material-tailwind/react";
+import { Link, useNavigate } from "react-router-dom";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../../firebase/firebaseConfig";
+import { useState } from "react";
 
 export function SignUp() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const history = useNavigate()
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    if(email && password){
+      createUserWithEmailAndPassword(auth, email, password)
+        .then(data => {
+          alert('Sign Up successfully')
+          history('/dashboard/home')
+        })
+        .catch(error => {
+          alert('This accout does exist')
+        })
+    }
+    else{
+      alert('Please enter email or password')
+    }
+  }
+
   return (
     <section className="m-8 flex">
-            <div className="w-2/5 h-full hidden lg:block">
+            <div className ="w-2/5 h-full hidden lg:block">
         <img
           src="/img/pattern.png"
           className="h-full w-full object-cover rounded-3xl"
@@ -28,8 +45,22 @@ export function SignUp() {
               Your email
             </Typography>
             <Input
+              onChange={(e) => setEmail(e.target.value)}
               size="lg"
               placeholder="name@mail.com"
+              className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
+              labelProps={{
+                className: "before:content-none after:content-none",
+              }}
+            />
+            <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
+              Password
+            </Typography>
+            <Input
+              onChange={(e) => setPassword(e.target.value)}
+              type='password'
+              size="lg"
+              placeholder="********"
               className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
               labelProps={{
                 className: "before:content-none after:content-none",
@@ -54,7 +85,7 @@ export function SignUp() {
             }
             containerProps={{ className: "-ml-2.5" }}
           />
-          <Button className="mt-6" fullWidth>
+          <Button onClick={handleSubmit} className="mt-6" fullWidth>
             Register Now
           </Button>
 

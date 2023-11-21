@@ -8,6 +8,8 @@ import {
 } from "@heroicons/react/24/solid";
 import { Home, Profile, Tables, Notifications } from "@/pages/dashboard";
 import { SignIn, SignUp } from "@/pages/auth";
+import ForgotPassword from "./pages/auth/forgot-password";
+import SignOut from "./pages/auth/sign-out";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -47,6 +49,18 @@ export const routes = [
     title: "auth pages",
     layout: "auth",
     pages: [
+      {
+        icon: <ServerStackIcon {...icon} />,
+        name: "sign out",
+        path: "/sign-out",
+        element: <SignOut />,
+      },
+      {
+        icon: <ServerStackIcon {...icon} />,
+        name: "forgot password",
+        path: "/forgot-password",
+        element: <ForgotPassword />,
+      },
       {
         icon: <ServerStackIcon {...icon} />,
         name: "sign in",

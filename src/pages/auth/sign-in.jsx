@@ -1,10 +1,52 @@
 import { Card, Input, Checkbox, Button, Typography} from "@material-tailwind/react";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { auth, provider } from "../../../firebase/firebaseConfig";
+import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 
 export function SignIn() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [value, setValue] = useState()
+  const history = useNavigate()
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    if(email && password) {
+      signInWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          history('/dashboard/home')
+        })
+        .catch(() => {
+          alert('This account doesnt exist. Please register')
+        })
+    } 
+    else {
+        alert('Please enter your account')
+    }
+  }
+
+  const forgotPassword = () => {
+    history('/auth/forgot-password')
+  }
+
+  const handleGoogleSignIn = () => {
+    signInWithPopup(auth, provider)
+      .then((data) => {
+        setValue(data.user.email)
+        localStorage.setItem('email', data.user.email)
+        {email ? history('/dashboard/home') : <></>}
+        // if(email)
+        //   history('/dashboard/home')
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+  }
+
+  useEffect(() => {
+    setValue(localStorage.getItem('email'))
+  })
 
   return (
     <section className="m-8 flex gap-4">
@@ -13,14 +55,14 @@ export function SignIn() {
           <Typography variant="h2" className="font-bold mb-4">Sign In</Typography>
           <Typography variant="paragraph" color="blue-gray" className="text-lg font-normal">Enter your email and password to Sign In.</Typography>
         </div>
-        <form onSubmit={signIn} className="mt-8 mb-2 mx-auto w-80 max-w-screen-lg lg:w-1/2">
+        <form className="mt-8 mb-2 mx-auto w-80 max-w-screen-lg lg:w-1/2">
           <div className="mb-1 flex flex-col gap-6">
             <Typography variant="small" color="blue-gray" className="-mb-3 font-medium">
               Your email
             </Typography>
             <Input
               onChange={(e) => setEmail(e.target.value)}
-              value={email}
+              id="email"
               size="lg"
               placeholder="name@mail.com"
               className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
@@ -33,8 +75,8 @@ export function SignIn() {
             </Typography>
             <Input
               onChange={(e) => setPassword(e.target.value)}
-              value={password}
-              type="password"
+              id="password"
+              type='password'
               size="lg"
               placeholder="********"
               className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
@@ -61,7 +103,7 @@ export function SignIn() {
             }
             containerProps={{ className: "-ml-2.5" }}
           />
-          <Button className="mt-6" fullWidth>
+          <Button onClick={handleSubmit} className="mt-6" fullWidth>
             Sign In
           </Button>
 
@@ -79,13 +121,13 @@ export function SignIn() {
               containerProps={{ className: "-ml-2.5" }}
             />
             <Typography variant="small" className="font-medium text-gray-900">
-              <a href="#">
+              <a onClick={forgotPassword} href="#">
                 Forgot Password
               </a>
             </Typography>
           </div>
           <div className="space-y-4 mt-8">
-            <Button size="lg" color="white" className="flex items-center gap-2 justify-center shadow-md" fullWidth>
+            <Button onClick={handleGoogleSignIn} size="lg" color="white" className="flex items-center gap-2 justify-center shadow-md" fullWidth>
               <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g clipPath="url(#clip0_1156_824)">
                   <path d="M16.3442 8.18429C16.3442 7.64047 16.3001 7.09371 16.206 6.55872H8.66016V9.63937H12.9813C12.802 10.6329 12.2258 11.5119 11.3822 12.0704V14.0693H13.9602C15.4741 12.6759 16.3442 10.6182 16.3442 8.18429Z" fill="#4285F4" />
