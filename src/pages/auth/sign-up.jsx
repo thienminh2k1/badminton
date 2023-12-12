@@ -13,16 +13,16 @@ export function SignUp() {
     e.preventDefault()
     if(email && password){
       createUserWithEmailAndPassword(auth, email, password)
-        .then(data => {
+        .then(() => {
           alert('Sign Up successfully')
           history('/dashboard/home')
         })
-        .catch(error => {
-          alert('This accout does exist')
+        .catch((error) => {
+          alert(error.message)
         })
-    }
+    } 
     else{
-      alert('Please enter email or password')
+      alert('Please register your account')
     }
   }
 

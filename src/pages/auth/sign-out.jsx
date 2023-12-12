@@ -10,7 +10,7 @@ const SignOut = () => {
             .then(() => {
                 history('/auth/sign-in')
                 localStorage.clear()
-                // window.location.reload()
+                window.location.reload()
             })
     }
 

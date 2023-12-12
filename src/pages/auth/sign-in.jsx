@@ -1,7 +1,7 @@
 import { Card, Input, Checkbox, Button, Typography} from "@material-tailwind/react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { auth, provider } from "../../../firebase/firebaseConfig";
+import { auth, googleProvider, twitterProvider } from "../../../firebase/firebaseConfig";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 
 export function SignIn() {
@@ -15,10 +15,11 @@ export function SignIn() {
     if(email && password) {
       signInWithEmailAndPassword(auth, email, password)
         .then(() => {
+          localStorage.setItem('email', email)
           history('/dashboard/home')
         })
-        .catch(() => {
-          alert('This account doesnt exist. Please register')
+        .catch((error) => {
+          alert(error.message)
         })
     } 
     else {
@@ -31,23 +32,31 @@ export function SignIn() {
   }
 
   const handleGoogleSignIn = () => {
-    signInWithPopup(auth, provider)
+    signInWithPopup(auth, googleProvider)
       .then((data) => {
         setValue(data.user.email)
         localStorage.setItem('email', data.user.email)
-        {email ? history('/dashboard/home') : <></>}
-        // if(email)
-        //   history('/dashboard/home')
+        history('/dashboard/home')
       })
       .catch((error) => {
         console.log(error)
       })
   }
+  
+  const handleTwitterSignIn = () => {
+    signInWithPopup(auth, twitterProvider)
+    .then(() => {
+      history('/dashboard/home')
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+  }
 
   useEffect(() => {
     setValue(localStorage.getItem('email'))
   })
-
+  
   return (
     <section className="m-8 flex gap-4">
       <div className="w-full lg:w-3/5 mt-24">
@@ -62,6 +71,7 @@ export function SignIn() {
             </Typography>
             <Input
               onChange={(e) => setEmail(e.target.value)}
+              
               id="email"
               size="lg"
               placeholder="name@mail.com"
@@ -143,7 +153,7 @@ export function SignIn() {
               </svg>
               <span>Sign in With Google</span>
             </Button>
-            <Button size="lg" color="white" className="flex items-center gap-2 justify-center shadow-md" fullWidth>
+            <Button onClick={handleTwitterSignIn} size="lg" color="white" className="flex items-center gap-2 justify-center shadow-md" fullWidth>
               <img src="/img/twitter-logo.svg" height={24} width={24} alt="" />
               <span>Sign in With Twitter</span>
             </Button>
